@@ -14,7 +14,6 @@
 
 
 
-
 /* ---- dark and light mode */
 .light-mode {
     color: var(--black);
@@ -83,12 +82,20 @@ header .dark-mode-button .dark-mode-indicator {
 
 
 
+/* ---- Main ---- */
+main {
+    position: relative;
+    padding: 4rem 0;
+}
+
+
+
 /* ---- Table ---- */
 .table {
     display: flex;
     flex-wrap: wrap;
 
-    margin: 3rem auto;
+    margin: 0 auto;
 
     height: 450px;
     width: 450px;
@@ -139,6 +146,8 @@ header .dark-mode-button .dark-mode-indicator {
     margin: 0 auto;
 }
 
+
+
 /* ---- Score ---- */
 .info .score h3 {
     margin: 0.75rem;
@@ -176,6 +185,48 @@ header .dark-mode-button .dark-mode-indicator {
 }
 
 
+/* ---- Modal ---- */
+.modal {
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background-color: #161616e3;
+
+    opacity: 0;  
+    transition: opacity 0.5s;
+}
+.modal .result {
+    display: flex;
+    flex-direction: column;
+
+    color: var(--white);  
+}
+.modal .result h1 {
+    font-size: 6rem;
+    text-align: center;
+
+    margin-bottom: 10rem;
+}
+.modal .result button {
+    padding: 5px 10px;
+
+    min-width: 200px;
+    max-width: 200px;
+    height: 40px;
+
+    margin: 1rem auto;
+    cursor: pointer;
+}
+
+
 
 /* ---- Footer ----  */
 footer {
@@ -184,7 +235,7 @@ footer {
     justify-content: center;
 
     min-height: 80px;
-    margin-top: 4rem;
+    margin-top: 2rem;
 
     text-align: center;
 }
@@ -216,7 +267,11 @@ footer {
     body {
         font-size: 14px;
     }
-    
+
+    main {
+        padding: 2rem 0;
+    }
+
     /* ---- Table ---- */
     .table {
         margin: 1rem auto;
@@ -229,6 +284,14 @@ footer {
     }
     .info .score {
         margin: 2rem 0;
+    }
+
+    /* ---- Modal ---- */
+    .modal .result {
+        max-width: 100%;
+    }
+    .modal .result h1 {
+        font-size: 2rem;
     }
 
     /* ---- Footer ---- */

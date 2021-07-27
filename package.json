@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc && copyfiles -u 1 src/**/*.* -e src/**/*.ts  dist/",
-    "start-dev": "tsc -w && copyfiles -u 1 src/**/*.* -e src/**/*.ts  dist/"
+    "start-dev": "copyfiles -u 1 src/**/*.* -e src/**/*.ts  dist/ && tsc -w"
   },
   "keywords": [],
   "author": "",

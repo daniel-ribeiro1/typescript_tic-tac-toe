@@ -164,6 +164,9 @@ header .dark-mode-button .dark-mode-indicator {
     font-size: 5rem;
     text-align: center;
 }
+.player.dragging {
+    opacity: 0.5;
+}
 .info .player-area small {
     display: inline-block;
     max-width: 200px;

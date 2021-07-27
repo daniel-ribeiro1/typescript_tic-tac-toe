@@ -1,7 +1,24 @@
+// ---- Types ----
+type gameTable = {
+    a1: '' | 'O' | 'X', 
+    a2: '' | 'O' | 'X', 
+    a3: '' | 'O' | 'X',
+    b1: '' | 'O' | 'X', 
+    b2: '' | 'O' | 'X', 
+    b3: '' | 'O' | 'X',
+    c1: '' | 'O' | 'X', 
+    c2: '' | 'O' | 'X', 
+    c3: '' | 'O' | 'X'
+};
+type playerOptions = 'X' | 'O';
+
+
 // ---- HTML Elements ----
 let darkModeButton = document.querySelector('header .dark-mode-button') as HTMLButtonElement;
 let playerElement = document.querySelector('.player-area .player') as HTMLParagraphElement;
 let table = document.querySelector('.table') as HTMLDivElement;
+let scoreX = document.querySelector('.score .score-x') as HTMLDivElement;
+let scoreO = document.querySelector('.score .score-o') as HTMLDivElement;
 
 // ---- Initial Data ----
 const darkMode = {
@@ -9,7 +26,18 @@ const darkMode = {
     toggle
 }
 
-let player: string = ( Math.round(Math.random()) ) ? 'X' : 'O';
+let virtualTable: gameTable = {
+    a1: '', a2: '', a3: '',
+    b1: '', b2: '', b3: '',
+    c1: '', c2: '', c3: ''
+}
+
+let player: playerOptions = ( Math.round(Math.random()) ) ? 'X' : 'O';
+const score = {
+    X: 0,
+    O: 0
+};
+
 let gameStatus: boolean = true;
 
 renderInfo();
@@ -78,8 +106,23 @@ function dropOnTable(e: Event) {
     element.classList.remove('overOption');
     element.innerHTML = player;
 
+    synchronizeVirtualTable(element.getAttribute('data-option'));
+    checkWinner();
+    checkTheGameTableIsFull();
+
     player = (player === 'X') ? 'O' : 'X';
     renderInfo();
+}
+function synchronizeVirtualTable(key: string | null) {
+    if(key === null) {
+        return;
+    }
+
+    if( key === 'a1' || key === 'a2' || key === 'a3' || 
+        key === 'b1' || key === 'b2' || key === 'b3' ||
+        key === 'c1' || key === 'c2' || key === 'c3') {
+            virtualTable[key] = player;
+    }
 }
 
 // info
@@ -91,6 +134,55 @@ function renderInfo() {
     }
 
     playerElement.innerHTML = player;
+    
+    scoreX.innerHTML = '<b>X</b>' + score.X.toString();
+    scoreO.innerHTML = '<b>O</b>' + score.O.toString();
 }
 
 // validations 
+function checkTheGameTableIsFull() {
+    for(let key in virtualTable) {
+        if( key === 'a1' || key === 'a2' || key === 'a3' || 
+            key === 'b1' || key === 'b2' || key === 'b3' ||
+            key === 'c1' || key === 'c2' || key === 'c3') {
+            
+            if(virtualTable[key] === '') {
+                return;
+            }
+        }
+    }
+
+    gameStatus = false;
+}
+function checkWinner() {
+    let possibilities = [
+        'a1,a2,a3',
+        'b1,b2,b3',
+        'c1,c2,c3',
+
+        'a1,b1,c1',
+        'a2,b2,c2',
+        'a3,b3,c3',
+
+        'a1,b2,c3',
+        'a3,b2,c1'
+    ];
+
+    possibilities.forEach(possibilitie => {
+        let keys = possibilitie.split(',');
+        let haveAWinner: boolean = false;
+
+        haveAWinner = keys.every(key => {
+            if( key === 'a1' || key === 'a2' || key === 'a3' || 
+                key === 'b1' || key === 'b2' || key === 'b3' ||
+                key === 'c1' || key === 'c2' || key === 'c3') {
+                    return virtualTable[key] === player;
+            }
+        });
+
+        if(haveAWinner) {
+            score[player] = score[player] + 1 ;
+            gameStatus = false;
+        }
+    });
+}

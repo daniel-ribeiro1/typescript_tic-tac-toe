@@ -102,6 +102,10 @@ main {
 
     transition: height 1s, width 1s;
 }
+
+
+
+/* ---- Table Options ---- */
 .table .option {
     display: flex;
     justify-content: center;
@@ -113,9 +117,8 @@ main {
     width: 150px;
 
     transition: height 1s, width 1s;
+    cursor: pointer;
 }
-
-/* ---- Table Options ---- */
 .option.border-right {
     border-right: 2px solid;
 }

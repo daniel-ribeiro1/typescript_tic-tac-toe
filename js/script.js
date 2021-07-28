@@ -26,9 +26,12 @@ renderInfo();
 darkModeButton.addEventListener('click', darkMode.toggle);
 playerElement.addEventListener('dragstart', dragStartPlayerElement);
 playerElement.addEventListener('dragend', dragEndPlayerElement);
-table.addEventListener('dragover', dragOverTable);
-table.addEventListener('dragleave', dragLeaveTable);
+table.addEventListener('dragover', overTable);
+table.addEventListener('dragleave', leaveTable);
 table.addEventListener('drop', dropOnTable);
+table.addEventListener('mouseover', overTable);
+table.addEventListener('mouseout', leaveTable);
+table.addEventListener('click', dropOnTable);
 continueButton.addEventListener('click', continueTheGame);
 restartButton.addEventListener('click', resetGame);
 function toggle(e) {
@@ -50,7 +53,7 @@ function dragEndPlayerElement(e) {
     let element = e.currentTarget;
     element.classList.remove('dragging');
 }
-function dragOverTable(e) {
+function overTable(e) {
     let element = e.target;
     if (element.innerHTML || gameStatus === false) {
         return;
@@ -58,12 +61,16 @@ function dragOverTable(e) {
     e.preventDefault();
     element.classList.add('overOption');
 }
-function dragLeaveTable(e) {
+function leaveTable(e) {
     let element = e.target;
     element.classList.remove('overOption');
 }
 function dropOnTable(e) {
     let element = e.target;
+    if (element.innerHTML || gameStatus === false) {
+        return;
+    }
+    element.style.cursor = 'default';
     element.classList.remove('overOption');
     element.innerHTML = player;
     synchronizeVirtualTable(element.getAttribute('data-option'));
@@ -90,6 +97,7 @@ function resetTable() {
             virtualTable[key] = '';
             let itemTable = table.querySelector(`div[data-option=${key}]`);
             itemTable.innerHTML = '';
+            itemTable.style.cursor = 'pointer';
         }
     }
 }
@@ -115,6 +123,7 @@ function checkTheGameTableIsFull() {
         }
     }
     gameStatus = false;
+    renderResult('empate');
 }
 function checkWinner() {
     let possibilities = [
@@ -148,10 +157,11 @@ function renderResult(winner) {
     let winnerH1 = document.querySelector('main .modal .result h1');
     modal.style.display = 'flex';
     setTimeout(() => modal.style.opacity = '1', 150);
-    winnerH1.innerHTML = 'O vencedor foi ' + winner + '!';
+    winnerH1.innerHTML = (winner === 'empate') ? 'Deu velha!' : 'O vencedor foi ' + winner + '!';
 }
 function continueTheGame() {
     resetTable();
+    console.log(virtualTable);
     modal.style.opacity = '0';
     setTimeout(() => modal.style.display = 'none', 500);
     gameStatus = true;

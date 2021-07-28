@@ -58,9 +58,13 @@ playerElement.addEventListener('dragstart', dragStartPlayerElement);
 playerElement.addEventListener('dragend', dragEndPlayerElement);
 
 // table
-table.addEventListener('dragover', dragOverTable);
-table.addEventListener('dragleave', dragLeaveTable);
+table.addEventListener('dragover', overTable);
+table.addEventListener('dragleave', leaveTable);
 table.addEventListener('drop', dropOnTable);
+
+table.addEventListener('mouseover', overTable);
+table.addEventListener('mouseout', leaveTable);
+table.addEventListener('click', dropOnTable);
 
 // modal
 continueButton.addEventListener('click', continueTheGame);
@@ -94,7 +98,7 @@ function dragEndPlayerElement(e: Event) {
 }
 
 //table
-function dragOverTable(e: Event) {
+function overTable(e: Event) {
     let element = e.target as HTMLDivElement;
     
     if(element.innerHTML || gameStatus === false) {
@@ -104,13 +108,19 @@ function dragOverTable(e: Event) {
     e.preventDefault();
     element.classList.add('overOption');
 }
-function dragLeaveTable(e: Event) {
+function leaveTable(e: Event) {
     let element = e.target as HTMLDivElement;
+
     element.classList.remove('overOption');
 }
 function dropOnTable(e: Event) {
     let element = e.target as HTMLDivElement;
+
+    if(element.innerHTML || gameStatus === false) {
+        return;
+    }
     
+    element.style.cursor = 'default';
     element.classList.remove('overOption');
     element.innerHTML = player;
 
@@ -141,6 +151,7 @@ function resetTable() {
 
             let itemTable = table.querySelector(`div[data-option=${key}]`) as HTMLDivElement;
             itemTable.innerHTML = '';
+            itemTable.style.cursor = 'pointer';
         }
     }
 }
@@ -173,6 +184,7 @@ function checkTheGameTableIsFull() {
     }
 
     gameStatus = false;
+    renderResult('empate');
 }
 function checkWinner() {
     let possibilities = [
@@ -216,7 +228,7 @@ function renderResult(winner: string) {
     modal.style.display = 'flex';
     setTimeout(() => modal.style.opacity = '1', 150);
 
-    winnerH1.innerHTML = 'O vencedor foi ' + winner + '!';
+    winnerH1.innerHTML = (winner === 'empate') ? 'Deu velha!': 'O vencedor foi ' + winner + '!';
 }
 
 function continueTheGame() {

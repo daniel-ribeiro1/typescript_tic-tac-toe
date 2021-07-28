@@ -15,10 +15,16 @@ type playerOptions = 'X' | 'O';
 
 // ---- HTML Elements ----
 let darkModeButton = document.querySelector('header .dark-mode-button') as HTMLButtonElement;
+
 let playerElement = document.querySelector('.player-area .player') as HTMLParagraphElement;
-let table = document.querySelector('.table') as HTMLDivElement;
 let scoreX = document.querySelector('.score .score-x') as HTMLDivElement;
 let scoreO = document.querySelector('.score .score-o') as HTMLDivElement;
+
+let table = document.querySelector('.table') as HTMLDivElement;
+let modal = document.querySelector('main .modal') as HTMLDivElement;
+
+let continueButton = document.querySelector('#continue-button') as HTMLButtonElement;
+let restartButton = document.querySelector('#restart-button') as HTMLButtonElement;
 
 // ---- Initial Data ----
 const darkMode = {
@@ -56,7 +62,9 @@ table.addEventListener('dragover', dragOverTable);
 table.addEventListener('dragleave', dragLeaveTable);
 table.addEventListener('drop', dropOnTable);
 
-
+// modal
+continueButton.addEventListener('click', continueTheGame);
+restartButton.addEventListener('click', resetGame);
 
 // ---- Functions ----
 // dark mode
@@ -124,6 +132,18 @@ function synchronizeVirtualTable(key: string | null) {
             virtualTable[key] = player;
     }
 }
+function resetTable() {
+    for(let key in virtualTable) {
+        if( key === 'a1' || key === 'a2' || key === 'a3' || 
+        key === 'b1' || key === 'b2' || key === 'b3' ||
+        key === 'c1' || key === 'c2' || key === 'c3') {
+            virtualTable[key] = '';
+
+            let itemTable = table.querySelector(`div[data-option=${key}]`) as HTMLDivElement;
+            itemTable.innerHTML = '';
+        }
+    }
+}
 
 // info
 function renderInfo() {
@@ -183,6 +203,43 @@ function checkWinner() {
         if(haveAWinner) {
             score[player] = score[player] + 1 ;
             gameStatus = false;
+
+            renderResult(player);
         }
     });
+}
+
+// modal
+function renderResult(winner: string) {
+    let winnerH1 = document.querySelector('main .modal .result h1') as HTMLHeadingElement;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.style.opacity = '1', 150);
+
+    winnerH1.innerHTML = 'O vencedor foi ' + winner + '!';
+}
+
+function continueTheGame() {
+    resetTable();
+
+    modal.style.opacity = '0';
+    setTimeout(() => modal.style.display = 'none', 500);
+
+    gameStatus = true;
+
+    renderInfo();
+}
+
+function resetGame() {
+    resetTable();
+
+    modal.style.opacity = '0';
+    setTimeout(() => modal.style.display = 'none', 500);
+
+    score.X = 0;
+    score.O = 0;
+
+    gameStatus = true;
+
+    renderInfo();
 }

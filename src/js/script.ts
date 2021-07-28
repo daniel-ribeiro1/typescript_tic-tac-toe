@@ -125,17 +125,24 @@ function dropOnTable(e: Event) {
     element.innerHTML = player;
 
     synchronizeVirtualTable(element.getAttribute('data-option'));
-    checkWinner();
-    checkTheGameTableIsFull();
+    
+    if(haveWinner()) {
+        score[player] = score[player] + 1 ;
+        gameStatus = false;
 
-    player = (player === 'X') ? 'O' : 'X';
-    renderInfo();
-}
-function synchronizeVirtualTable(key: string | null) {
-    if(key === null) {
+        renderResult(player);
         return;
     }
 
+    if(isTheGameTableFull()) {
+        gameStatus = false;
+        renderResult('empate');
+        return;
+    }
+       
+    renderInfo();
+}
+function synchronizeVirtualTable(key: string | null) {
     if( key === 'a1' || key === 'a2' || key === 'a3' || 
         key === 'b1' || key === 'b2' || key === 'b3' ||
         key === 'c1' || key === 'c2' || key === 'c3') {
@@ -145,11 +152,12 @@ function synchronizeVirtualTable(key: string | null) {
 function resetTable() {
     for(let key in virtualTable) {
         if( key === 'a1' || key === 'a2' || key === 'a3' || 
-        key === 'b1' || key === 'b2' || key === 'b3' ||
-        key === 'c1' || key === 'c2' || key === 'c3') {
+            key === 'b1' || key === 'b2' || key === 'b3' ||
+            key === 'c1' || key === 'c2' || key === 'c3') {
             virtualTable[key] = '';
 
             let itemTable = table.querySelector(`div[data-option=${key}]`) as HTMLDivElement;
+
             itemTable.innerHTML = '';
             itemTable.style.cursor = 'pointer';
         }
@@ -164,6 +172,7 @@ function renderInfo() {
         playerElement.setAttribute('draggable', 'true');
     }
 
+    player = (player === 'X') ? 'O' : 'X';
     playerElement.innerHTML = player;
     
     scoreX.innerHTML = '<b>X</b>' + score.X.toString();
@@ -171,22 +180,22 @@ function renderInfo() {
 }
 
 // validations 
-function checkTheGameTableIsFull() {
+function isTheGameTableFull(): boolean {
+    let isFull = true;
+
     for(let key in virtualTable) {
         if( key === 'a1' || key === 'a2' || key === 'a3' || 
             key === 'b1' || key === 'b2' || key === 'b3' ||
             key === 'c1' || key === 'c2' || key === 'c3') {
             
             if(virtualTable[key] === '') {
-                return;
+                isFull = false;
             }
         }
     }
-
-    gameStatus = false;
-    renderResult('empate');
+    return isFull;
 }
-function checkWinner() {
+function haveWinner(): boolean {
     let possibilities = [
         'a1,a2,a3',
         'b1,b2,b3',
@@ -199,12 +208,13 @@ function checkWinner() {
         'a1,b2,c3',
         'a3,b2,c1'
     ];
+    let haveAWinner: boolean = false;
 
     possibilities.forEach(possibilitie => {
         let keys = possibilitie.split(',');
-        let haveAWinner: boolean = false;
+        let isWinner = false;
 
-        haveAWinner = keys.every(key => {
+        isWinner = keys.every(key => {
             if( key === 'a1' || key === 'a2' || key === 'a3' || 
                 key === 'b1' || key === 'b2' || key === 'b3' ||
                 key === 'c1' || key === 'c2' || key === 'c3') {
@@ -212,13 +222,12 @@ function checkWinner() {
             }
         });
 
-        if(haveAWinner) {
-            score[player] = score[player] + 1 ;
-            gameStatus = false;
-
-            renderResult(player);
+        if(isWinner) {
+            haveAWinner = isWinner;
         }
     });
+
+    return haveAWinner;
 }
 
 // modal

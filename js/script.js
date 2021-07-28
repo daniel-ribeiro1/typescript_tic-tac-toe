@@ -74,15 +74,20 @@ function dropOnTable(e) {
     element.classList.remove('overOption');
     element.innerHTML = player;
     synchronizeVirtualTable(element.getAttribute('data-option'));
-    checkWinner();
-    checkTheGameTableIsFull();
-    player = (player === 'X') ? 'O' : 'X';
+    if (haveWinner()) {
+        score[player] = score[player] + 1;
+        gameStatus = false;
+        renderResult(player);
+        return;
+    }
+    if (isTheGameTableFull()) {
+        gameStatus = false;
+        renderResult('empate');
+        return;
+    }
     renderInfo();
 }
 function synchronizeVirtualTable(key) {
-    if (key === null) {
-        return;
-    }
     if (key === 'a1' || key === 'a2' || key === 'a3' ||
         key === 'b1' || key === 'b2' || key === 'b3' ||
         key === 'c1' || key === 'c2' || key === 'c3') {
@@ -108,24 +113,25 @@ function renderInfo() {
     else {
         playerElement.setAttribute('draggable', 'true');
     }
+    player = (player === 'X') ? 'O' : 'X';
     playerElement.innerHTML = player;
     scoreX.innerHTML = '<b>X</b>' + score.X.toString();
     scoreO.innerHTML = '<b>O</b>' + score.O.toString();
 }
-function checkTheGameTableIsFull() {
+function isTheGameTableFull() {
+    let isFull = true;
     for (let key in virtualTable) {
         if (key === 'a1' || key === 'a2' || key === 'a3' ||
             key === 'b1' || key === 'b2' || key === 'b3' ||
             key === 'c1' || key === 'c2' || key === 'c3') {
             if (virtualTable[key] === '') {
-                return;
+                isFull = false;
             }
         }
     }
-    gameStatus = false;
-    renderResult('empate');
+    return isFull;
 }
-function checkWinner() {
+function haveWinner() {
     let possibilities = [
         'a1,a2,a3',
         'b1,b2,b3',
@@ -136,22 +142,22 @@ function checkWinner() {
         'a1,b2,c3',
         'a3,b2,c1'
     ];
+    let haveAWinner = false;
     possibilities.forEach(possibilitie => {
         let keys = possibilitie.split(',');
-        let haveAWinner = false;
-        haveAWinner = keys.every(key => {
+        let isWinner = false;
+        isWinner = keys.every(key => {
             if (key === 'a1' || key === 'a2' || key === 'a3' ||
                 key === 'b1' || key === 'b2' || key === 'b3' ||
                 key === 'c1' || key === 'c2' || key === 'c3') {
                 return virtualTable[key] === player;
             }
         });
-        if (haveAWinner) {
-            score[player] = score[player] + 1;
-            gameStatus = false;
-            renderResult(player);
+        if (isWinner) {
+            haveAWinner = isWinner;
         }
     });
+    return haveAWinner;
 }
 function renderResult(winner) {
     let winnerH1 = document.querySelector('main .modal .result h1');
@@ -161,7 +167,6 @@ function renderResult(winner) {
 }
 function continueTheGame() {
     resetTable();
-    console.log(virtualTable);
     modal.style.opacity = '0';
     setTimeout(() => modal.style.display = 'none', 500);
     gameStatus = true;
